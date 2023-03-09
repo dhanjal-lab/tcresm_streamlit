@@ -221,4 +221,4 @@ if st.button("Clear All"):
 
 
 
-st.caption('Developed By: Shashank Yadav - shashank[at]arizona.edu', unsafe_allow_html=True)
+st.caption('Developed By: Shashank Yadav : shashank[at]arizona.edu', unsafe_allow_html=True)
