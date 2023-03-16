@@ -203,7 +203,7 @@ if st.button('Submit'):
     # st.download_button(label="Download Predictions",data=csv,file_name='tcresm_predictions.csv', mime='text/csv')
     try:
         res = predict_on_batch_output(dataset,shorttask,group)
-        with st.spinner('Calculating ...'):
+        with st.spinner('Calculating ....'):
             time.sleep(0.5)
             st.write("Binding Probabilities")
             st.dataframe((np.round(res, 4)), use_container_width=500, height=500)
