@@ -205,30 +205,38 @@ def convert_df(df):
 
 #####################
 if st.button('Submit'):
-    # with st.spinner('Wait for it...'):
-    #     time.sleep(0.5)
-    # res = predict_on_batch_output(dataset,shorttask,group).flatten()
-    # # res = predict_output(dataset,shorttask,group)
+    with st.spinner('Wait for it...'):
+        time.sleep(0.5)
+    res = predict_on_batch_output(dataset,shorttask,group).flatten()
+    # res = predict_output(dataset,shorttask,group)
     # print(type(res), res.shape)
-    # st.write("Binding Probabilities")
-    # st.dataframe((np.round(res, 4)))
+    st.write("Binding Probabilities")
+    # st.dataframe(['Sample Number','Output'], use_container_width=500, height=500)
+    val_df = pd.DataFrame({'Sample Number': [item+1 for item in range(0,res.shape[0])], 'Binding Probability': res.tolist()})
+    val_df = val_df.set_index(['Sample Number'])
+    # st.dataframe(np.round(res, 4), use_container_width=500, height=500)
+    st.dataframe(val_df, use_container_width=500, height=500)
     # csv = convert_df(pd.DataFrame(np.round(res, 4), columns=['output']))
-    # st.download_button(label="Download Predictions",data=csv,file_name='tcresm_predictions.csv', mime='text/csv')
-    try:
-        res = predict_on_batch_output(dataset,shorttask,group)
-        with st.spinner('Calculating ...'):
-            time.sleep(0.5)
-            st.write("Binding Probabilities")
-            # st.dataframe(['Sample Number','Output'], use_container_width=500, height=500)
-            val_df = pd.DataFrame({'Sample Number': [item+1 for item in range(0,res.shape[0])], 'Binding Probability': res.tolist()})
-            val_df = val_df.set_index(['Sample Number'])
-            # st.dataframe(np.round(res, 4), use_container_width=500, height=500)
-            st.dataframe(val_df, use_container_width=500, height=500)
-            # csv = convert_df(pd.DataFrame(np.round(res, 4), columns=['output']))
-            csv = convert_df(val_df)
-            st.download_button(label="Download Predictions",data=csv,file_name='tcresm_predictions.csv', mime='text/csv')
-    except:
-        st.error('Please ensure you have uploaded the files before pressing the Submit button', icon="🚨")
+    csv = convert_df(val_df)
+    st.download_button(label="Download Predictions",data=csv,file_name='tcresm_predictions.csv', mime='text/csv')
+
+
+
+    # try:
+    #     res = predict_on_batch_output(dataset,shorttask,group)
+    #     with st.spinner('Calculating ...'):
+    #         time.sleep(0.5)
+    #         st.write("Binding Probabilities")
+    #         # st.dataframe(['Sample Number','Output'], use_container_width=500, height=500)
+    #         val_df = pd.DataFrame({'Sample Number': [item+1 for item in range(0,res.shape[0])], 'Binding Probability': res.tolist()})
+    #         val_df = val_df.set_index(['Sample Number'])
+    #         # st.dataframe(np.round(res, 4), use_container_width=500, height=500)
+    #         st.dataframe(val_df, use_container_width=500, height=500)
+    #         # csv = convert_df(pd.DataFrame(np.round(res, 4), columns=['output']))
+    #         csv = convert_df(val_df)
+    #         st.download_button(label="Download Predictions",data=csv,file_name='tcresm_predictions.csv', mime='text/csv')
+    # except:
+    #     st.error('Please ensure you have uploaded the files before pressing the Submit button', icon="🚨")
     
 
 
