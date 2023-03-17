@@ -92,6 +92,7 @@ def predict_on_batch_output(dataset,shorttask,group):
         model = load_model('models/mcpas/bestmodel_alphabetapeptide.hdf5',compile=False)
         #predict_on_batch
         output = model.predict_on_batch([alpha_np, beta_np, pep_np])
+
     elif dataset=='mcpas' and shorttask=='abpm':
         #load data
         alpha, beta, pep, mhc = group
@@ -100,6 +101,7 @@ def predict_on_batch_output(dataset,shorttask,group):
         model = load_model('models/mcpas/bestmodel_alphabetaptptidemhc.hdf5',compile=False)
         #predict_on_batch
         output = model.predict_on_batch([alpha_np, beta_np, pep_np, mhc_np])
+
     elif dataset=='mcpas' and shorttask=='ap':
         #load data
         alpha, pep, = group
@@ -108,6 +110,7 @@ def predict_on_batch_output(dataset,shorttask,group):
         model = load_model('models/mcpas/bestmodel_alphapeptide.hdf5',compile=False)
         #predict_on_batch
         output = model.predict_on_batch([alpha_np,pep_np])
+
     elif dataset=='mcpas' and shorttask=='bp':
         #load data
         beta, pep = group
@@ -116,6 +119,7 @@ def predict_on_batch_output(dataset,shorttask,group):
         model = load_model('models/mcpas/bestmodel_betapeptide.hdf5',compile=False)
         #predict_on_batch
         output = model.predict_on_batch([beta_np, pep_np])
+
     elif dataset=='mcpas' and shorttask=='apm':
         #load data
         alpha, pep, mhc = group
@@ -124,6 +128,7 @@ def predict_on_batch_output(dataset,shorttask,group):
         model = load_model('models/mcpas/bestmodel_alphapeptidemhc.hdf5',compile=False)
         #predict_on_batch
         output = model.predict_on_batch([alpha_np, pep_np, mhc_np])
+
     elif dataset=='mcpas' and shorttask=='bpm':
         #load data
         beta, pep, mhc = group
@@ -132,6 +137,7 @@ def predict_on_batch_output(dataset,shorttask,group):
         model = load_model('models/mcpas/bestmodel_betapeptidemhc.hdf5',compile=False)
         #predict_on_batch
         output = model.predict_on_batch([beta_np, pep_np, mhc_np])
+
     elif dataset=='vdjdb' and shorttask=='abp':
         #load data
         alpha, beta, pep = group
@@ -140,6 +146,7 @@ def predict_on_batch_output(dataset,shorttask,group):
         model = load_model('models/vdjdb/bestmodel_alphabetapeptide.hdf5',compile=False)
         #predict_on_batch
         output = model.predict_on_batch([alpha_np, beta_np, pep_np])
+
     elif dataset=='vdjdb' and shorttask=='abpm':
         #load data
         alpha, beta, pep, mhc = group
@@ -148,7 +155,8 @@ def predict_on_batch_output(dataset,shorttask,group):
         model = load_model('models/vdjdb/bestmodel_alphabetapeptidemhc.hdf5',compile=False)
         #predict_on_batch
         output = model.predict_on_batch([alpha_np, beta_np, pep_np, mhc_np])
-    elif dataset=='vdjdb' and shorttask=='ap':
+
+    elif dataset=='vdjdb' and shorttask=='ap':    
         #load data
         alpha, pep, = group
         alpha_np, pep_np, = np.load(alpha), np.load(pep)
@@ -156,6 +164,7 @@ def predict_on_batch_output(dataset,shorttask,group):
         model = load_model('models/vdjdb/bestmodel_alphapeptide.hdf5',compile=False)
         #predict_on_batch
         output = model.predict_on_batch([alpha_np, pep_np])
+
     elif dataset=='vdjdb' and shorttask=='bp':
         #load data
         beta, pep = group
@@ -164,6 +173,7 @@ def predict_on_batch_output(dataset,shorttask,group):
         model = load_model('models/vdjdb/bestmodel_betapeptide.hdf5',compile=False)
         #predict_on_batch
         output = model.predict_on_batch([beta_np, pep_np])
+
     elif dataset=='vdjdb' and shorttask=='apm':
         #load data
         alpha, pep, mhc = group
@@ -172,6 +182,7 @@ def predict_on_batch_output(dataset,shorttask,group):
         model = load_model('models/vdjdb/bestmodel_alphapeptidemhc.hdf5',compile=False)
         #predict_on_batch
         output = model.predict_on_batch([alpha_np, pep_np, mhc_np])
+
     elif dataset=='vdjdb' and shorttask=='bpm':
         #load data
         beta, pep, mhc = group
@@ -196,18 +207,25 @@ def convert_df(df):
 if st.button('Submit'):
     # with st.spinner('Wait for it...'):
     #     time.sleep(0.5)
-    # res = predict_on_batch_output(dataset,shorttask,group)
+    # res = predict_on_batch_output(dataset,shorttask,group).flatten()
+    # # res = predict_output(dataset,shorttask,group)
+    # print(type(res), res.shape)
     # st.write("Binding Probabilities")
     # st.dataframe((np.round(res, 4)))
     # csv = convert_df(pd.DataFrame(np.round(res, 4), columns=['output']))
     # st.download_button(label="Download Predictions",data=csv,file_name='tcresm_predictions.csv', mime='text/csv')
     try:
         res = predict_on_batch_output(dataset,shorttask,group)
-        with st.spinner('Calculating ....'):
+        with st.spinner('Calculating ...'):
             time.sleep(0.5)
             st.write("Binding Probabilities")
-            st.dataframe((np.round(res, 4)), use_container_width=500, height=500)
-            csv = convert_df(pd.DataFrame(np.round(res, 4), columns=['output']))
+            # st.dataframe(['Sample Number','Output'], use_container_width=500, height=500)
+            val_df = pd.DataFrame({'Sample Number': [item+1 for item in range(0,res.shape[0])], 'Binding Probability': res.tolist()})
+            val_df = val_df.set_index(['Sample Number'])
+            # st.dataframe(np.round(res, 4), use_container_width=500, height=500)
+            st.dataframe(val_df, use_container_width=500, height=500)
+            # csv = convert_df(pd.DataFrame(np.round(res, 4), columns=['output']))
+            csv = convert_df(val_df)
             st.download_button(label="Download Predictions",data=csv,file_name='tcresm_predictions.csv', mime='text/csv')
     except:
         st.error('Please ensure you have uploaded the files before pressing the Submit button', icon="🚨")
